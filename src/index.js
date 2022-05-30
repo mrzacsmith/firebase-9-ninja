@@ -7,6 +7,8 @@ import {
   addDoc,
   deleteDoc,
   doc,
+  query,
+  where,
 } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 
@@ -25,22 +27,22 @@ const db = getFirestore()
 const auth = getAuth()
 
 const colRef = collection(db, 'books')
-// getDocs(colRef)
-//   .then((snapshot) => {
-//     let books = []
-//     snapshot.forEach((doc) => {
-//       books.push({ ...doc.data(), id: doc.id })
-//     })
-//     console.log(books)
-//   })
-//   .catch((err) => console.log(err.message))
-onSnapshot(colRef, (snapshot) => {
+const q = query(colRef, where('author', '==', 'dr z'))
+
+onSnapshot(q, (snapshot) => {
   let books = []
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id })
   })
   console.log(books)
 })
+// onSnapshot(colRef, (snapshot) => {
+//   let books = []
+//   snapshot.docs.forEach((doc) => {
+//     books.push({ ...doc.data(), id: doc.id })
+//   })
+//   console.log(books)
+// })
 
 const addBookForm = document.querySelector('.add')
 addBookForm.addEventListener('submit', (e) => {
