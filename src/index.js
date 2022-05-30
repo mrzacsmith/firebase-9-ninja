@@ -1,5 +1,13 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore, collection, getDocs } from 'firebase/firestore'
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  onSnapshot,
+  addDoc,
+  deleteDoc,
+  doc,
+} from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
@@ -17,12 +25,44 @@ const db = getFirestore()
 const auth = getAuth()
 
 const colRef = collection(db, 'books')
-getDocs(colRef)
-  .then((snapshot) => {
-    let books = []
-    snapshot.forEach((doc) => {
-      books.push({ ...doc.data(), id: doc.id })
-    })
-    console.log(books)
+// getDocs(colRef)
+//   .then((snapshot) => {
+//     let books = []
+//     snapshot.forEach((doc) => {
+//       books.push({ ...doc.data(), id: doc.id })
+//     })
+//     console.log(books)
+//   })
+//   .catch((err) => console.log(err.message))
+onSnapshot(colRef, (snapshot) => {
+  let books = []
+  snapshot.docs.forEach((doc) => {
+    books.push({ ...doc.data(), id: doc.id })
   })
-  .catch((err) => console.log(err.message))
+  console.log(books)
+})
+
+const addBookForm = document.querySelector('.add')
+addBookForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+
+  addDoc(colRef, {
+    title: addBookForm.title.value,
+    author: addBookForm.author.value,
+  })
+    .then(() => {
+      addBookForm.reset()
+    })
+    .catch((err) => console.log(err.message))
+})
+
+const delBookForm = document.querySelector('.delete')
+delBookForm.addEventListener('submit', (e) => {
+  e.preventDefault()
+  const docRef = doc(db, 'books', delBookForm.id.value)
+  deleteDoc(docRef)
+    .then(() => {
+      delBookForm.reset()
+    })
+    .catch((err) => console.log(err.message))
+})
