@@ -17,6 +17,12 @@ const db = getFirestore()
 const auth = getAuth()
 
 const colRef = collection(db, 'books')
-getDocs(colRef).then((snapshot) => {
-  console.log(snapshot.docs)
-})
+getDocs(colRef)
+  .then((snapshot) => {
+    let books = []
+    snapshot.forEach((doc) => {
+      books.push({ ...doc.data(), id: doc.id })
+    })
+    console.log(books)
+  })
+  .catch((err) => console.log(err.message))
